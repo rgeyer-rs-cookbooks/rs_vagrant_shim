@@ -9,6 +9,10 @@ Requirements
 Attributes
 ==========
 
+Features
+========
+* Writes collectd rrd data to /var/lib/collectd (or OS specific directory) so that you can verify custom monitoring configurations
+
 Usage
 =====
 

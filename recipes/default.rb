@@ -32,6 +32,7 @@ if node['platform_family'] == "rhel"
 end
 
 package "ruby"
+package "collectd-rrdtool"
 
 # TODO: Not sure why running this in the actual rightscale::setup_monitoring does not work
 # But collectd is not installed on Cent 6.3
@@ -49,8 +50,5 @@ include_recipe "rightscale::setup_monitoring"
 rewind "package[collectd]" do
   only_if { false }
 end
-
-# TODO: Add an /etc/collectd.d/foo file that enables local RRD storage, so that
-# custom monitoring can be confirmed
 
 sys_firewall "2222"
