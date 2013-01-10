@@ -25,6 +25,10 @@
 chef_gem "chef-rewind"
 require 'chef/rewind'
 
+# Used by RsVagrantShim::PersistFile
+chef_gem "lockfile"
+require 'lockfile'
+
 include_recipe "cron"
 
 if node['platform_family'] == "rhel"

@@ -3,6 +3,8 @@ Description
 
 A cookbook which hopes to allow vagrant interoperability with RightScale Chef cookbooks, including support for the RightScale only functionality like remote_recipe, server_collection, and right_link_tag.
 
+The persistent file is stored in /vagrant/rs_vagrant_shim/#{config.vm.hostname}, so in a multi VM vagrant environment, make sure that the hostnames are unique!
+
 Requirements
 ============
 
@@ -57,3 +59,36 @@ TODO
 * Allow the use of
   * block_device::*, but particularly block_device::setup_ephemeral
   * sys::setup_swap
+
+
+Stream of Consciousness
+=======================
+
+* rs_vagrant_shim/<hostname>/persist.js
+  * Only the vagrant boxes can read and write to persist.js
+  * The host can read, usually only for the purposes of fetching tags
+* rs_vagrant_shim/<hostname>/dispatch/*.js
+  * files which contain both a runlist and attributes
+  * written once by the vagrant boxes
+  * read, acted upon, and destroyed by the host
+* host daemon
+  * watches rs_vagrant_shim/**/dispatch/ for new *.js files
+  * upon finding one, runs `bundle exec vagrant provision <boxname>` for each box with the target tag specified in the dispatch *.js file
+* vagrantfile
+  * A library will be added to the vagrant file (I.E. require 'somelib') which will interrogate the dispatch directory and replace chef.json and chef.run_list with the correct stuff, or default to the boot runlist
+
+blueprint_root/
+  runlists/
+    default|boot.rb
+    operational_recipe_name.rb
+  rs_vagrant_shim/
+    hostname1/
+      persist.js
+      dispatch/
+    hostname2/
+      persist.js
+      dispatch/
+
+The following should result in running the operational recipe defined in runlists/operational_recipe_name.rb, and then the dispatch file should be destroyed
+  cp runlists/operational_recipe_name.rb rs_vagrant_shim/hostname1/dispatch/foo.rb
+  bundle exec vagrant provision hostname1
