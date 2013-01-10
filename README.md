@@ -90,5 +90,6 @@ blueprint_root/
       dispatch/
 
 The following should result in running the operational recipe defined in runlists/operational_recipe_name.rb, and then the dispatch file should be destroyed
+
   cp runlists/operational_recipe_name.rb rs_vagrant_shim/hostname1/dispatch/foo.rb
   bundle exec vagrant provision hostname1
