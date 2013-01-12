@@ -10,6 +10,9 @@ default[:sys_firewall][:enabled] = 'disabled'
 # If it is set, overwrite it
 node[:sys_firewall][:enabled] = 'disabled'
 
+default[:sys][:swap_size] = "0.5"
+default[:sys][:swap_file] = "/mnt/ephemeral/swapfile"
+
 node['network']['interfaces'].each do |iface|
   iface[1]['addresses'].each do |addr|
     ip = addr[0]

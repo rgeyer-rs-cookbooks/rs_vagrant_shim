@@ -9,8 +9,12 @@ Gem::Specification.new do |gem|
   gem.authors = ["Ryan J. Geyer"]
   gem.executables << 'rs_vagrant_shim'
 
+  # BEGIN: These dependencies are duplicated in lib/rs_vagrant_shim/cli, make sure they're
+  # in sync
   gem.add_dependency('berkshelf', '~> 1.1')
   gem.add_dependency('vagrant', '~> 1.0.5')
+  # END
+
   gem.add_dependency('thor', '~> 0.16.0')
 
   gem.files = Dir.glob("{lib,bin,locales}/**/*") + ["LICENSE.txt", "README.rdoc"]

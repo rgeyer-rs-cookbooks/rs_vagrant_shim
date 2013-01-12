@@ -1,0 +1,32 @@
+= rs_vagrant_shim
+
+== Usage
+
+Install it
+
+    gem install rs_vagrant_shim
+
+Create a new project
+
+    rs_vagrant_shim a_new_project
+
+Add some stuff to the default runlist found at a_new_project/runlists/default/default.json
+
+Fire up the vagrant box
+
+    bundle exec vagrant up default
+
+Create some new runlists at a_new_project/runlists/default/new_runlist.json
+
+Run some of the other runlists by copying them to a_new_project/rs_vagrant_shim/default/dispatch
+
+    cp a_new_project/runlists/default/new_runlist.json a_new_project/rs_vagrant_shim/default/dispatch/
+    bundle exec vagrant provision default
+
+Or specifying a "runlist" environment variable
+
+    runlist=new_runlist bundle exec vagrant provision default
+
+== Bundle Exec?
+
+So, you'll notice that your project directory contains a gemfile, and all the examples use bundle exec.  This is because vagrant has a fairly poor plugin mechanism in version ~> 1.0, so we just skip it all by making sure all the necessary gems are loaded by bundler.
