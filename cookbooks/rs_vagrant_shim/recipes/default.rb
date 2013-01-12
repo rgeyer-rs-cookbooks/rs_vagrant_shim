@@ -7,27 +7,36 @@
 # All rights reserved - Do Not Redistribute
 #
 
-# TODO: Set these node attributes using ohai and other goodies
-#:cloud => {
-# :private_ips => ["127.0.0.1"],
-# :public_ips => ["33.33.33.11"]
-#},
-#:rightscale => {
-# :instance_uuid => "auuid",
-# :collectd_packages_version => "latest",
-# :servers => {
-#   :sketchy => {
-#     :hostname => "foo.bar.baz"
-#   }
-# }
-#}
+############### START COMPILE TIME EXECUTION
+
+# Hack up some filesystem things *right now*
+#d = directory "/opt/rightscale/sandbox/bin" do
+#  recursive true
+#  action :nothing
+#end
+
+#d.run_action(:create)
+
+#l = link "/opt/rightscale/sandbox/bin/gem" do
+#  to "/opt/chef/embedded/bin/gem"
+#  action :nothing
+#end
+
+#l.run_action(:create)
+
+# RightImage dependencies
+#%w{libxml2-devel libxslt-devel}.each do |p|
+#  pack = package p do
+#    action :nothing
+#  end
+#
+#  pack.run_action(:install)
+#end
 
 chef_gem "chef-rewind"
 require 'chef/rewind'
 
-# Used by RsVagrantShim::PersistFile
-chef_gem "lockfile"
-require 'lockfile'
+############### END COMPILE TIME EXECUTION
 
 include_recipe "cron"
 
