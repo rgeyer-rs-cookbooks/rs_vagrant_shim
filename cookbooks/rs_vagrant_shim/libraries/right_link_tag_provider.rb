@@ -12,7 +12,7 @@ class Chef
       end
 
       def action_publish
-        get_exclusive_access(node) do |json|
+        read_write_my_persist_file(node) do |json|
           json["tags"] = [] unless json.key?("tags")
           json["tags"] << @new_resource.name unless json["tags"].include? @new_resource.name
         end
@@ -20,14 +20,14 @@ class Chef
       end
 
       def action_remove
-        get_exclusive_access(node) do |json|
+        read_write_my_persist_file(node) do |json|
           json["tags"].delete(@new_resource.name)
         end
         true
       end
 
       def action_load
-        get_exclusive_access(node) do |json|
+        read_write_my_persist_file(node) do |json|
           node[:right_link_tags] = json["tags"]
         end
         true
