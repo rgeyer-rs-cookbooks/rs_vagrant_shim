@@ -1,4 +1,4 @@
-# Copyright (c) 2012 Ryan J. Geyer
+# Copyright (c) 2013 Ryan J. Geyer
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the

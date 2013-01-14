@@ -21,56 +21,38 @@
 
 class Chef
   class Resource
-    class RemoteRecipe < Chef::Resource
+
+    # Servers with associated tags
+    #
+    class ServerCollection < Chef::Resource
       def initialize(name, run_context=nil)
         super(name, run_context)
-        @resource_name = :remote_recipe
-        @scope = :all
-        @action = :run
-        @allowed_actions.push(:run)
+        @resource_name = :server_collection
+        @action = :load
+        @allowed_actions.push(:load)
+        @timeout = 120
       end
 
-      def recipe(arg=nil)
-        set_or_return(
-          :recipe,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def attributes(arg=nil)
-        set_or_return(
-          :attributes,
-          arg,
-          :kind_of => [ Hash ]
-        )
-      end
-
-      def recipients(arg=nil)
+      def agent_ids(arg=nil)
         converted_arg = arg.is_a?(String) ? [ arg ] : arg
         set_or_return(
-          :recipients,
-          arg,
+          :agent_ids,
+          converted_arg,
           :kind_of => [ Array ]
         )
       end
 
-      def recipients_tags(arg=nil)
+      def tags(arg=nil)
         converted_arg = arg.is_a?(String) ? [ arg ] : arg
         set_or_return(
-          :recipients_tags,
-          arg,
+          :tags,
+          converted_arg,
           :kind_of => [ Array ]
         )
       end
 
-      def scope(arg=nil)
-        set_or_return(
-          :scope,
-          arg,
-          :equal_to => [ :single, :all ]
-        )
-      end
     end
+
   end
+
 end

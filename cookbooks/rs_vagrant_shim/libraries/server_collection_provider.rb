@@ -24,7 +24,7 @@ require ::File.expand_path(::File.join(::File.dirname(__FILE__), "helper"))
 
 class Chef
   class Provider
-    class RightLinkTag < Chef::Provider
+    class ServerCollection < Chef::Provider
 
       include ::RsVagrantShim::Helper
 
@@ -32,24 +32,25 @@ class Chef
         true
       end
 
-      def action_publish
-        read_write_my_persist_file(node) do |json|
-          json["tags"] = [] unless json.key?("tags")
-          json["tags"] << @new_resource.name unless json["tags"].include? @new_resource.name
-        end
-        true
-      end
-
-      def action_remove
-        read_write_my_persist_file(node) do |json|
-          json["tags"].delete(@new_resource.name)
-        end
-        true
-      end
-
       def action_load
-        read_write_my_persist_file(node) do |json|
-          node[:right_link_tags] = json["tags"]
+        tags = @new_resource.tags
+        node[:server_collection] ||= {}
+        node[:server_collection][@new_resource.name] = {}
+        all_vm_shim_dirs(node).each do |shim_dir|
+          persist_file = ::File.join(shim_dir, "persist.json")
+          persist_hash = read_persist_file(persist_file)
+          if persist_hash.key?("tags")
+            persist_hash["tags"].each do |vm_tag|
+              tags.each do |tag_query|
+                subd_tag_query = tag_query.gsub('*', '')
+                if vm_tag.start_with?(subd_tag_query)
+                  uuid = uuid_from_shim_dir(shim_dir)
+                  node[:server_collection][@new_resource.name][uuid] = persist_hash["tags"] if uuid
+                  next
+                end
+              end
+            end
+          end
         end
         true
       end
@@ -58,4 +59,4 @@ class Chef
   end
 end
 
-Chef::Platform.platforms[:default].merge!(:right_link_tag => Chef::Provider::RightLinkTag)
+Chef::Platform.platforms[:default].merge!(:server_collection => Chef::Provider::ServerCollection)

@@ -39,6 +39,7 @@ require 'berkshelf/vagrant'
 require 'rs_vagrant_shim'
 
 Vagrant::Config.run do |config|
+  <% idx = 0 %>
   <% boxes.each do |vmname| %>
   config.vm.define :<%= vmname %> do |<%= vmname %>_config|
     <%= vmname %>_config.berkshelf.berksfile_path = "Berksfile"
@@ -48,8 +49,7 @@ Vagrant::Config.run do |config|
     <%= vmname %>_config.vm.box = "ri_centos6.3_v5.8.8"
     <%= vmname %>_config.vm.box_url = "https://s3.amazonaws.com/rgeyer/pub/ri_centos6.3_v5.8.8_vagrant.box"
 
-    # TODO: Increment this for each VM in a multi VM Vagrant file
-    <%= vmname %>_config.vm.network :hostonly, "33.33.33.10"
+    <%= vmname %>_config.vm.network :hostonly, "33.33.33.<%= 10 + idx %>"
 
     <%= vmname %>_config.ssh.max_tries = 40
     <%= vmname %>_config.ssh.timeout   = 120
@@ -58,6 +58,7 @@ Vagrant::Config.run do |config|
       chef.run_list_dir = "runlists/<%= vmname %>"
       chef.shim_dir = "rs_vagrant_shim/<%= vmname %>"
     end
+    <% idx += 1 %>
   end
   <% end %>
 end
