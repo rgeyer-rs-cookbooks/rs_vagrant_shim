@@ -9,23 +9,24 @@ Install it
 Create a new project
 
     rs_vagrant_shim init a_new_project
+    cd a_new_project
 
-Add some stuff to the default runlist found at a_new_project/runlists/default/default.json
+Add some stuff to the default runlist found at runlists/default/default.json
 
 Fire up the vagrant box
 
-    bundle exec vagrant up default
+    bundle exec vagrant up
 
-Create some new runlists at a_new_project/runlists/default/new_runlist.json
+Create some new runlists at runlists/default/new_runlist.json
 
-Run some of the other runlists by copying them to a_new_project/rs_vagrant_shim/default/dispatch
+Run some of the other runlists by copying them to rs_vagrant_shim/default/dispatch
 
-    cp a_new_project/runlists/default/new_runlist.json a_new_project/rs_vagrant_shim/default/dispatch/
-    bundle exec vagrant provision default
+    cp runlists/default/new_runlist.json rs_vagrant_shim/default/dispatch/
+    bundle exec vagrant provision
 
 Or specifying a "runlist" environment variable
 
-    runlist=new_runlist bundle exec vagrant provision default
+    runlist=new_runlist bundle exec vagrant provision
 
 === Multi VMs
 
