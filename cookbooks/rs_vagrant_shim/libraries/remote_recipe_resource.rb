@@ -50,7 +50,7 @@ class Chef
         converted_arg = arg.is_a?(String) ? [ arg ] : arg
         set_or_return(
           :recipients,
-          arg,
+          converted_arg,
           :kind_of => [ Array ]
         )
       end
@@ -59,7 +59,7 @@ class Chef
         converted_arg = arg.is_a?(String) ? [ arg ] : arg
         set_or_return(
           :recipients_tags,
-          arg,
+          converted_arg,
           :kind_of => [ Array ]
         )
       end
