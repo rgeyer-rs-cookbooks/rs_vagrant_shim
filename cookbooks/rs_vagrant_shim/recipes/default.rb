@@ -62,6 +62,7 @@ end
 
 package "ruby"
 package "collectd-rrdtool"
+package "parted"
 
 # TODO: Not sure why running this in the actual rightscale::setup_monitoring does not work
 # But collectd is not installed on Cent 6.3

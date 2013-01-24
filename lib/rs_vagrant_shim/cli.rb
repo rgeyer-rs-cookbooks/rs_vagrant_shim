@@ -66,7 +66,7 @@ end
 
       default_runlist_template = <<-EOF
 {
-  "cloud": { "provider": "vagrant" },
+  "cloud": { "provider": "vagrant", "public_ips": [], "private_ips": [] },
   "rightscale": { "instance_uuid": "uuid-<%= box %>" },
   "run_list": [
     "recipe[rs_vagrant_shim]"
