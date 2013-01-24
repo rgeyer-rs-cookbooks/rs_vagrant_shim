@@ -36,12 +36,17 @@ module Vagrant
             errors.add(I18n.t("vagrant.config.rs_vagrant_shim.run_list_dir_missing")) if !@run_list_dir || @run_list_dir.empty?
 
             if @shim_dir && !@shim_dir.empty? && @run_list_dir && !@run_list_dir.empty?
+              node_js_file = File.join(Dir.pwd, @shim_dir, 'node.js')
               dispatch_dir = File.join(Dir.pwd, @shim_dir, 'dispatch')
               FileUtils.mkdir_p dispatch_dir unless File.directory? dispatch_dir
 
               dispatch_files = Dir.entries(dispatch_dir).reject{|f| /^\.+/ =~ f}.sort_by{|f| File.mtime(File.join(dispatch_dir, f))}
 
               runlist = JSON.parse(File.read(File.join(Dir.pwd, @run_list_dir, 'default.json')))
+
+              if File.exist? node_js_file
+                runlist.merge! JSON.parse(File.read(node_js_file))["normal"]
+              end
 
               # A specified runlist trumps all, but still inherits from default
               if ENV['runlist']

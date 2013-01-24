@@ -54,6 +54,18 @@ require 'chef/rewind'
 
 ############### END COMPILE TIME EXECUTION
 
+node_file = ::File.join("/vagrant/", node["rs_vagrant_shim"]["shim_dir"], "node.js")
+node_persister_name = "Persist node content to #{node_file}"
+
+rs_vagrant_shim_node_persister node_persister_name do
+  action :nothing
+end
+
+file ::File.join(Chef::Config[:file_cache_path], "rs_vagrant_shim_node_persister") do
+  action :touch
+  notifies :dehydrate, "rs_vagrant_shim_node_persister[#{node_persister_name}]", :delayed
+end
+
 include_recipe "cron"
 
 if node['platform_family'] == "rhel"
