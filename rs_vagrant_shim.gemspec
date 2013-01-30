@@ -1,6 +1,6 @@
 Gem::Specification.new do |gem|
   gem.name = "rs_vagrant_shim"
-  gem.version = "0.0.2"
+  gem.version = "0.2.0"
   gem.homepage = "https://github.com/rgeyer-rs-cookbooks/rs_vagrant_shim"
   gem.license = "MIT"
   gem.summary = %Q{Allows RightScale ServerTemplate development to be performed primarily within Vagrant}

@@ -44,6 +44,7 @@ module RsVagrantShim
     # for "this" VM.  Excludes "this" VM
     #
     def other_vm_shim_dirs(node)
+      persist_path = ::File.join("/vagrant/", node['rs_vagrant_shim']['shim_dir'])
       all_vm_shim_dirs(node).select{|dir| dir != persist_path}
     end
 
@@ -65,7 +66,7 @@ module RsVagrantShim
     end
 
     def uuid_from_shim_dir(shim_dir)
-      matches = /\/([a-zA-z_0-9]+)$/.match(shim_dir)
+      matches = /\/([a-zA-z_0-9\-]+)$/.match(shim_dir)
       if matches && matches.length > 1
         matches[1]
       else

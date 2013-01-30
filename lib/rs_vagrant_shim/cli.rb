@@ -26,6 +26,9 @@ module RsVagrantShim
     option :vmnames,
            :desc => "The name of one more many VMs to add to the Vagrantfile",
            :type => :array
+    option :storage,
+           :desc => "Sets up the VM(s) to have a 10GB storage volume attached on boot",
+           :type => :boolean
     def init(projectname)
       if File.directory? projectname
         puts "A directory named #{projectname} already exists, please specify a different project name"
@@ -39,28 +42,77 @@ require 'berkshelf/vagrant'
 require 'rs_vagrant_shim'
 
 Vagrant::Config.run do |config|
-  <% idx = 0 %>
-  <% boxes.each do |vmname| %>
-  config.vm.define :<%= vmname %> do |<%= vmname %>_config|
-    <%= vmname %>_config.berkshelf.berksfile_path = "Berksfile"
+  <% idx = 0 %><% boxes.each do |vmname| %>config.vm.define :<%= vmname %>_centos do |<%= vmname %>_centos_config|
+    <%= vmname %>_centos_config.berkshelf.berksfile_path = "Berksfile"
 
-    <%= vmname %>_config.vm.host_name = "<%= vmname %>"
+    <%= vmname %>_centos_config.vm.host_name = "<%= vmname %>_centos"
 
-    <%= vmname %>_config.vm.box = "ri_centos6.3_v5.8.8"
-    <%= vmname %>_config.vm.box_url = "https://s3.amazonaws.com/rgeyer/pub/ri_centos6.3_v5.8.8_vagrant.box"
+    <%= vmname %>_centos_config.vm.box = "ri_centos6.3_v5.8.8"
+    <%= vmname %>_centos_config.vm.box_url = "https://s3.amazonaws.com/rgeyer/pub/ri_centos6.3_v5.8.8_vagrant.box"
 
-    <%= vmname %>_config.vm.network :hostonly, "33.33.33.<%= 10 + idx %>"
+    <%= vmname %>_centos_config.vm.network :hostonly, "33.33.33.<%= 10 + idx %>"
 
-    <%= vmname %>_config.ssh.max_tries = 40
-    <%= vmname %>_config.ssh.timeout   = 120
+    <%= vmname %>_centos_config.ssh.max_tries = 40
+    <%= vmname %>_centos_config.ssh.timeout   = 120
 
-    <%= vmname %>_config.vm.provision Vagrant::RsVagrantShim::Provisioners::RsVagrantShim do |chef|
-      chef.run_list_dir = "runlists/<%= vmname %>"
-      chef.shim_dir = "rs_vagrant_shim/<%= vmname %>"
+    <%= vmname %>_centos_config.vm.provision Vagrant::RsVagrantShim::Provisioners::RsVagrantShim do |chef|
+      chef.run_list_dir = "runlists/<%= vmname %>_centos"
+      chef.shim_dir = "rs_vagrant_shim/<%= vmname %>_centos"
     end
-    <% idx += 1 %>
+
+    <% if options[:storage] %>hdd_file = "<%= vmname %>_centos_storage.vdi"
+    unless File.exists?(hdd_file)
+      <%= vmname %>_centos_config.vm.customize [
+        "createhd",
+        "--filename", hdd_file,
+        "--size", 10240
+      ]
+      <%= vmname %>_centos_config.vm.customize [
+        "storageattach",
+        :id,
+        "--storagectl", "SATA Controller",
+        "--port", 1,
+        "--type", "hdd",
+        "--medium", hdd_file
+      ]
+    end<% end %><% idx += 1 %>
   end
-  <% end %>
+
+  config.vm.define :<%= vmname %>_ubuntu do |<%= vmname %>_ubuntu_config|
+    <%= vmname %>_ubuntu_config.berkshelf.berksfile_path = "Berksfile"
+
+    <%= vmname %>_ubuntu_config.vm.host_name = "<%= vmname %>_ubuntu"
+
+    <%= vmname %>_ubuntu_config.vm.box = "ri_ubuntu12.04_v5.8.8"
+    <%= vmname %>_ubuntu_config.vm.box_url = "https://s3.amazonaws.com/rgeyer/pub/ri_ubuntu12.04_v5.8.8_vagrant.box"
+
+    <%= vmname %>_ubuntu_config.vm.network :hostonly, "33.33.33.<%= 10 + idx %>"
+
+    <%= vmname %>_ubuntu_config.ssh.max_tries = 40
+    <%= vmname %>_ubuntu_config.ssh.timeout   = 120
+
+    <%= vmname %>_ubuntu_config.vm.provision Vagrant::RsVagrantShim::Provisioners::RsVagrantShim do |chef|
+      chef.run_list_dir = "runlists/<%= vmname %>_ubuntu"
+      chef.shim_dir = "rs_vagrant_shim/<%= vmname %>_ubuntu"
+    end
+
+    <% if options[:storage] %>hdd_file = "<%= vmname %>_ubuntu_storage.vdi"
+    unless File.exists?(hdd_file)
+      <%= vmname %>_ubuntu_config.vm.customize [
+        "createhd",
+        "--filename", hdd_file,
+        "--size", 10240
+      ]
+      <%= vmname %>_ubuntu_config.vm.customize [
+        "storageattach",
+        :id,
+        "--storagectl", "SATA Controller",
+        "--port", 1,
+        "--type", "hdd",
+        "--medium", hdd_file
+      ]
+    end<% end %><% idx += 1 %>
+  end<% end %>
 end
       EOF
 
@@ -82,8 +134,20 @@ end
       end
 
       boxes.each do |box|
-        runlist_dir = File.join(projectname, "runlists", box)
-        shim_dir = File.join(projectname, "rs_vagrant_shim", box)
+        runlist_dir = File.join(projectname, "runlists", "#{box}_centos")
+        shim_dir = File.join(projectname, "rs_vagrant_shim", "#{box}_centos")
+        FileUtils.mkdir_p runlist_dir unless File.directory? runlist_dir
+        FileUtils.mkdir_p shim_dir unless File.directory? shim_dir
+        default_runlist_file = File.join(runlist_dir, "default.json")
+        default_runlist_erb = ERB.new(default_runlist_template)
+        File.open(File.join(default_runlist_file), "w") do |file|
+          file.write(default_runlist_erb.result(binding))
+        end
+      end
+
+      boxes.each do |box|
+        runlist_dir = File.join(projectname, "runlists", "#{box}_ubuntu")
+        shim_dir = File.join(projectname, "rs_vagrant_shim", "#{box}_ubuntu")
         FileUtils.mkdir_p runlist_dir unless File.directory? runlist_dir
         FileUtils.mkdir_p shim_dir unless File.directory? shim_dir
         default_runlist_file = File.join(runlist_dir, "default.json")
@@ -99,9 +163,9 @@ end
         file.write <<-EOF
 source :rubygems
 
-# This is probably a bad idea during dev, you might wanna consider specifying
-# a specific rs_vagrant_shim
-gem "rs_vagrant_shim", "~> 0.0.1"
+# This is probably a bad idea while rs_vagrant_shim is evolving, you might wanna consider specifying
+# a specific rs_vagrant_shim version
+gem "rs_vagrant_shim", "~> 0.2.0"
 
 gem "berkshelf", "~> 1.1"
 gem "vagrant", "~> 1.0.5"

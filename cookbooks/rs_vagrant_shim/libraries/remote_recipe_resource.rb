@@ -41,7 +41,7 @@ class Chef
       def attributes(arg=nil)
         set_or_return(
           :attributes,
-          arg,
+          arg || {},
           :kind_of => [ Hash ]
         )
       end

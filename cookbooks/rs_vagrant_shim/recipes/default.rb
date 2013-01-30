@@ -66,6 +66,16 @@ file ::File.join(Chef::Config[:file_cache_path], "rs_vagrant_shim_node_persister
   notifies :dehydrate, "rs_vagrant_shim_node_persister[#{node_persister_name}]", :delayed
 end
 
+# TODO: Make this multi OS
+template "/etc/yum.repos.d/Rightscale-epel.repo" do
+  source "rightscale-epel.repo.erb"
+end
+
+# TODO: Figure out where this thing originates from, and get it from there.
+cookbook_file "/etc/pki/rpm-gpg/RPM-GPG-KEY-RightScale" do
+  source "RPM-GPG-KEY-RightScale"
+end
+
 include_recipe "cron"
 
 if node['platform_family'] == "rhel"

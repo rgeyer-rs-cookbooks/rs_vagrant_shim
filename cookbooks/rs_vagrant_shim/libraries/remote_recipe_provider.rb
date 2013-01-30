@@ -48,7 +48,7 @@ class Chef
         timestamp = Time.now.to_i
 
         if tags && !tags.empty?
-          other_vm_shim_dirs(node).each do |shim_dir|
+          all_vm_shim_dirs(node).each do |shim_dir|
             break if scope == :single && target_files.length > 0
             persist_file = ::File.join(shim_dir, "persist.json")
             persist_hash = read_persist_file(persist_file)
@@ -61,8 +61,7 @@ class Chef
 
         if recipients && !recipients.empty?
           recipients_tags = recipients.map{|r| "server:uuid=#{r}" }
-          puts recipients_tags
-          other_vm_shim_dirs(node).each do |shim_dir|
+          all_vm_shim_dirs(node).each do |shim_dir|
             persist_file = ::File.join(shim_dir, "persist.json")
             persist_hash = read_persist_file(persist_file)
             if persist_hash.key?("tags") && (persist_hash["tags"] & recipients_tags).length > 0

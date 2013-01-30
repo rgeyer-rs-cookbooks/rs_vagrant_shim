@@ -43,8 +43,11 @@ class Chef
             persist_hash["tags"].each do |vm_tag|
               tags.each do |tag_query|
                 subd_tag_query = tag_query.gsub('*', '')
+                Chef::Log.info("Comparing tags #{vm_tag}.start_with?(#{subd_tag_query})")
                 if vm_tag.start_with?(subd_tag_query)
+                  Chef::Log.info("Passed! These tags match #{persist_hash["tags"]}")
                   uuid = uuid_from_shim_dir(shim_dir)
+                  Chef::Log.info("Wait up... Is there a uuid? #{uuid}")
                   node[:server_collection][@new_resource.name][uuid] = persist_hash["tags"] if uuid
                   next
                 end
@@ -52,6 +55,7 @@ class Chef
             end
           end
         end
+        Chef::Log.info("This here be da node yo.. #{node[:server_collection][@new_resource.name].length}")
         true
       end
 
