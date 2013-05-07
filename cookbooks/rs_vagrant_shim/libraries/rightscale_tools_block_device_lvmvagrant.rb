@@ -26,8 +26,8 @@ begin
     module Tools
       module Backup
         class VagrantFogLocalAdapter < Backup
-          def initialize(cloud, mount_point, nickname, options)
-            super(cloud, mount_point, nickname, options)
+          def initialize(cloud, mount_point, snapshot_mount_point, nickname, options)
+            super(cloud, mount_point, snapshot_mount_point, nickname, options)
 
             local_root = "/vagrant/block_device"
 
@@ -170,7 +170,9 @@ begin
             })
             @backup[:primary] = RightScale::Tools::Backup::VagrantFogLocalAdapter.new(
               :local,
-              @snapshot_mount_point, @nickname,
+              @mount_point,
+              @snapshot_mount_point,
+              @nickname,
               primary_options
             )
           end
