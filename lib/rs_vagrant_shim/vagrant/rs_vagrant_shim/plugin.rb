@@ -31,13 +31,18 @@ if Vagrant::VERSION < "1.2.0"
   raise "The RSVagrantShim plugin is only compatible with Vagrant 1.2+"
 end
 
-module Vagrant
+module VagrantPlugins
   module RsVagrantShim
     class Plugin < Vagrant.plugin("2")
       name "RSVagrantShim"
 
-      provisioner "rs_vagrant_shim" do
-        require_relative "provisioners"
+      config :rs_vagrant_shim, :provisioner do
+        require_relative "config/rs_vagrant_shim"
+        Config
+      end
+
+      provisioner :rs_vagrant_shim do
+        require_relative "provisioners/rs_vagrant_shim"
         require_relative "../../berkshelf/vagrant"
         Provisioner
       end
