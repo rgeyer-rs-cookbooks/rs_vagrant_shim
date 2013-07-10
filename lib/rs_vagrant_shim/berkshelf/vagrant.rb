@@ -23,13 +23,15 @@
 # even when the RsVagrantShim provisioner is used.
 module Berkshelf
   module Vagrant
-    def self.provisioners(shortcut, config)
-      if shortcut == :chef_solo
-        config.vm.provisioners.select do |prov|
-          prov.shortcut == :chef_solo || prov.shortcut.to_s == "Vagrant::RsVagrantShim::Provisioners::RsVagrantShim"
+    module EnvHelpers
+      def provisioners(name, env)
+        if name == :chef_solo
+          env[:machine].config.vm.provisioners.select do |prov|
+            prov.name == :chef_solo || prov.name.to_s == "Vagrant::RsVagrantShim::Provisioners::RsVagrantShim"
+          end
+        else
+          env[:machine].config.vm.provisioners.select { |prov| prov.name == name }
         end
-      else
-        config.vm.provisioners.select { |prov| prov.shortcut == shortcut }
       end
     end
   end

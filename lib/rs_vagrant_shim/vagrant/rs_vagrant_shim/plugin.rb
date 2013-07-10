@@ -1,5 +1,3 @@
-#!/usr/bin/env ruby
-
 # Copyright (c) 2013 Ryan J. Geyer
 #
 # Permission is hereby granted, free of charge, to any person obtaining
@@ -21,9 +19,28 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-require 'thor'
-require 'vagrant'
-require 'berkshelf'
-require File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'rs_vagrant_shim', 'cli'))
+begin
+  require "vagrant"
+rescue LoadError
+  raise "The RSVagrantShim plugin must be run within Vagrant."
+end
 
-RsVagrantShim::Cli.start(ARGV)
+# This is a sanity check to make sure no one is attempting to install
+# this into an early Vagrant version.
+if Vagrant::VERSION < "1.2.0"
+  raise "The RSVagrantShim plugin is only compatible with Vagrant 1.2+"
+end
+
+module Vagrant
+  module RsVagrantShim
+    class Plugin < Vagrant.plugin("2")
+      name "RSVagrantShim"
+
+      provisioner "rs_vagrant_shim" do
+        require_relative "provisioners"
+        require_relative "../../berkshelf/vagrant"
+        Provisioner
+      end
+    end
+  end
+end

@@ -19,12 +19,7 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-require 'thor'
-require 'vagrant'
-require 'berkshelf'
-
-glob_path = File.expand_path(File.join(File.dirname(__FILE__), 'rs_vagrant_shim')) + '/**/*.rb'
-Dir.glob(glob_path, &method(:require))
+require File.expand_path(File.join(File.dirname(__FILE__), 'rs_vagrant_shim', 'vagrant', 'rs_vagrant_shim', 'plugin'))
 
 locales_file = File.expand_path("../locales/en.yml", File.dirname(__FILE__))
 
