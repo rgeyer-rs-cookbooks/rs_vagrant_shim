@@ -1,6 +1,0 @@
-en:
-  vagrant:
-    config:
-      rs_vagrant_shim:
-        shim_dir_missing: "Must specify a directory where rs_vagrant_shim will use for runtime persistence for the VM"
-        run_list_dir_missing: "Must specify a directory where chef solo json config files (used as runlists) can be found for the VM"
